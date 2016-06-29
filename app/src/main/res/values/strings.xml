@@ -11,4 +11,6 @@
     <string name="error_email_field_empty">Email can\'t be empty</string>
     <string name="error_password_field_empty">Password can\'t be empty</string>
     <string name="error_email_field_invalid">Enter valid Email id</string>
+    <string name="bad_credentials">Login Error</string>
+    <string name="ok">OK</string>
 </resources>

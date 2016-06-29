@@ -1,11 +1,10 @@
 package com.itexico.utilities.lockmydevice;
 
-import android.content.Context;
-import android.content.SharedPreferences;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.text.method.PasswordTransformationMethod;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -14,8 +13,6 @@ import android.widget.TextView;
 
 public class UnlockActivity extends AppCompatActivity {
 
-    private static final String USER = "USER";
-    private static final String PASS = "PASS";
     private static final String UNLOCK_ACTIVITY = UnlockActivity.class.getCanonicalName();
     private static final String TAG = UnlockActivity.class.getSimpleName();
     private Button unlockButton;
@@ -27,18 +24,19 @@ public class UnlockActivity extends AppCompatActivity {
     private Button yesIAm;
     private Button noImNot;
 
-    private View.OnClickListener listener = new View.OnClickListener(){
+    private View.OnClickListener listener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            switch ( v.getId() ){
+            switch (v.getId()) {
                 case R.id.unlockButton:
                     addUser();
+                    break;
                 case R.id.yesIAm:
                     unlock();
                     break;
                 case R.id.noImNot:
                     loginView();
-
+                    break;
             }
         }
     };
@@ -53,89 +51,75 @@ public class UnlockActivity extends AppCompatActivity {
         unlockButton = (Button) findViewById(R.id.unlockButton);
         logInSection = (LinearLayout) findViewById(R.id.logInSection);
 
-        emailField = (EditText)findViewById(R.id.emailField);
+        emailField = (EditText) findViewById(R.id.emailField);
 
-        passField = (EditText)findViewById(R.id.passField);
+        passField = (EditText) findViewById(R.id.passField);
         passField.setTypeface(Typeface.DEFAULT);
         passField.setTransformationMethod(new PasswordTransformationMethod());
 
         unlockSection = (LinearLayout) findViewById(R.id.unlockSection);
-        userNameLabel = (TextView)findViewById(R.id.userNameLabel);
-        yesIAm = (Button)findViewById(R.id.yesIAm);
-        noImNot = (Button)findViewById(R.id.noImNot);
+        userNameLabel = (TextView) findViewById(R.id.userNameLabel);
+        yesIAm = (Button) findViewById(R.id.yesIAm);
+        noImNot = (Button) findViewById(R.id.noImNot);
 
         unlockButton.setOnClickListener(listener);
         yesIAm.setOnClickListener(listener);
         noImNot.setOnClickListener(listener);
 
         String user = getActiveUser();
-        if( user != null && user.length() > 0 ){
-            unlockView( user );
+        if (user != null && user.length() > 0) {
+            unlockView(user);
         } else {
             loginView();
         }
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        final int uiOptions = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION;
-        final View decorView = getWindow().getDecorView();
-        decorView.setSystemUiVisibility(uiOptions);
-    }
-
-    private void loginView(){
+    private void loginView() {
         logInSection.setVisibility(View.VISIBLE);
         unlockSection.setVisibility(View.GONE);
 
         removeUser();
     }
 
-    private void unlockView( String user ){
+    private void unlockView(String user) {
         logInSection.setVisibility(View.GONE);
         unlockSection.setVisibility(View.VISIBLE);
 
         userNameLabel.setText("ARE YOU " + user + " ? ");
     }
 
-    private String getActiveUser(){
-        SharedPreferences sharedPref = getSharedPreferences(UNLOCK_ACTIVITY, Context.MODE_PRIVATE);
-
-        String user = sharedPref.getString(USER, "");
-        return user;
+    private String getActiveUser() {
+        return DevicePreferencesManager.getString(this, DevicePreferencesManager.SHAREDPREFERENCE_KEY.KEY_USER);
     }
 
-    private String getActiveUserPass(){
-        SharedPreferences sharedPref = getSharedPreferences(UNLOCK_ACTIVITY, Context.MODE_PRIVATE);
-
-        String pass = sharedPref.getString(PASS, "");
-        return pass;
+    private String getActiveUserPass() {
+        return DevicePreferencesManager.getString(this, DevicePreferencesManager.SHAREDPREFERENCE_KEY.KEY_PASSWORD);
     }
 
-    private void addUser(){
-        if(isFieldsValidated()){
+    private void addUser() {
+        if (isFieldsValid()) {
             addUser(emailField.getText().toString(), passField.getText().toString());
+            unlock();
         }
     }
 
-    private void addUser( String user, String pass){
-        SharedPreferences sharedPref = getSharedPreferences(UNLOCK_ACTIVITY, Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPref.edit();
-        editor.putString(USER, user);
-        editor.putString(PASS, pass);
-        editor.commit();
+    private void addUser(String user, String pass) {
+        DevicePreferencesManager.setString(this, DevicePreferencesManager.SHAREDPREFERENCE_KEY.KEY_USER, user);
+        DevicePreferencesManager.setString(this, DevicePreferencesManager.SHAREDPREFERENCE_KEY.KEY_PASSWORD, pass);
     }
 
-    private void removeUser(){
-        SharedPreferences sharedPref = getSharedPreferences(UNLOCK_ACTIVITY, Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPref.edit();
-        editor.remove(USER);
-        editor.remove(PASS);
-        editor.commit();
+    private void removeUser() {
+        DevicePreferencesManager.removeString(this, DevicePreferencesManager.SHAREDPREFERENCE_KEY.KEY_USER);
     }
 
-    private void unlock(){
-        this.finish();
+    private void unlock() {
+        finish();
+        DevicePackageManagerUtil.launchDefaultLauncher(this);
+        final boolean isMyAppLauncherDefault = DevicePackageManagerUtil.isMyAppLauncherDefault(this);
+        Log.i(TAG, "unlock(), isMyAppLauncherDefault:"+isMyAppLauncherDefault);
+        if(!isMyAppLauncherDefault){
+            DevicePackageManagerUtil.resetPreferredLauncherAndOpenChooser(this,UnlockActivity.class);
+        }
     }
 
     private void hideSystemUI() {
@@ -151,28 +135,29 @@ public class UnlockActivity extends AppCompatActivity {
                         | View.SYSTEM_UI_FLAG_IMMERSIVE);
     }
 
-    public boolean isFieldsValidated(){
+    public boolean isFieldsValid() {
         final String emailId = emailField.getText().toString();
         final String password = passField.getText().toString();
 
-        boolean validated = true;
-        emailField.setError(null);
-        passField.setError(null);
+        boolean valid = true;
         if (!(emailId.length() > 0)) {
-            emailField.setError(getString(R.string.error_email_field_empty));
-            emailField.requestFocus();
-            validated = false;
+            valid = false;
+            AppUIUtils.showErrorBadCredentialsMessage(this, R.string.error_email_field_empty);
         }
-        if (AppUtils.isValidEmail(emailId)) {
-            emailField.setError(getString(R.string.error_email_field_invalid));
-            emailField.requestFocus();
-            validated = false;
+        if (!AppUtils.isValidEmail(emailId)) {
+            valid = false;
+            AppUIUtils.showErrorBadCredentialsMessage(this, R.string.error_email_field_invalid);
         }
         if (!(password.length() > 0)) {
-            passField.setError(getString(R.string.error_password_field_empty));
-            passField.requestFocus();
-            validated = false;
+            valid = false;
+            AppUIUtils.showErrorBadCredentialsMessage(this, R.string.error_password_field_empty);
         }
-        return validated;
+        return valid;
     }
+
+    @Override
+    public void onBackPressed() {
+        Log.i(TAG, "Disabled Back click...");
+    }
+
 }
