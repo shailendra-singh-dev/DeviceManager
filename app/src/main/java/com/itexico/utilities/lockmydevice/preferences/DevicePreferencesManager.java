@@ -1,4 +1,4 @@
-package com.itexico.utilities.lockmydevice;
+package com.itexico.utilities.lockmydevice.preferences;
 
 import android.content.Context;
 import android.content.SharedPreferences;

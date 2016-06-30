@@ -1,15 +1,22 @@
 package com.itexico.utilities.lockmydevice;
 
+import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.text.method.PasswordTransformationMethod;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import com.itexico.utilities.lockmydevice.preferences.DevicePreferencesManager;
+import com.itexico.utilities.lockmydevice.utils.AppUIUtils;
+import com.itexico.utilities.lockmydevice.utils.AppUtils;
+import com.itexico.utilities.lockmydevice.utils.DevicePackageManagerUtil;
 
 public class UnlockActivity extends AppCompatActivity {
 
@@ -116,8 +123,31 @@ public class UnlockActivity extends AppCompatActivity {
         finish();
         DevicePackageManagerUtil.launchDefaultLauncher(this);
         final boolean isMyAppLauncherDefault = DevicePackageManagerUtil.isMyAppLauncherDefault(this);
-        Log.i(TAG, "unlock(), isMyAppLauncherDefault:"+isMyAppLauncherDefault);
-        if(!isMyAppLauncherDefault){
+        Log.i(TAG, "AAAA unlock(), isMyAppLauncherDefault:" + isMyAppLauncherDefault);
+        if(isMyAppLauncherDefault) {
+            DevicePackageManagerUtil.setLauncherComponentState(this, UnlockActivity.class, false);
+        }
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        Log.i(TAG, "onKeyDown(),keyCode:" + keyCode);
+        return super.onKeyDown(keyCode, event);
+    }
+
+    @Override
+    protected void onUserLeaveHint() {
+        super.onUserLeaveHint();
+        Log.i(TAG, "AAAA onUserLeaveHint()");
+        final boolean isMyAppLauncherDefault = DevicePackageManagerUtil.isMyAppLauncherDefault(this);
+        Log.i(TAG, "AAAA unlock(), isMyAppLauncherDefault:" + isMyAppLauncherDefault);
+        if(DevicePackageManagerUtil.isMyAppLauncherDefault(this)){
+            Intent intent = new Intent().addCategory(Intent.CATEGORY_HOME).setAction(Intent.ACTION_MAIN).
+                    setClassName(getPackageName(), getPackageName() + "." + UnlockActivity.class.getSimpleName());
+            Log.i(TAG, "AAAA onUserLeaveHint(),DevicePackageManagerUtil.isMyAppLauncherDefault");
+            startActivity(intent);
+        }else{
+            Log.i(TAG, "AAAA onUserLeaveHint(),DevicePackageManagerUtil.resetPreferredLauncherAndOpenChooser()");
             DevicePackageManagerUtil.resetPreferredLauncherAndOpenChooser(this,UnlockActivity.class);
         }
     }
@@ -157,7 +187,7 @@ public class UnlockActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        Log.i(TAG, "Disabled Back click...");
+        Log.i(TAG, "AAAA Disabled Back click...");
     }
 
 }
