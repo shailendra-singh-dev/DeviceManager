@@ -1,11 +1,12 @@
-package com.itexico.utilities.lockmydevice;
+package com.itexico.utilities.lockmydevice.receiver;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
-import com.itexico.utilities.lockmydevice.utils.DevicePackageManagerUtil;
+import com.itexico.utilities.lockmydevice.activities.UnlockActivity;
+import com.itexico.utilities.lockmydevice.devicepackage.DevicePackageManager;
 
 /**
  * Created by developeri on 5/26/16.
@@ -17,8 +18,8 @@ public class UnlockReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         if (intent.getAction() != null) {
-            Log.i(TAG, "AAAA onReceive()");
-            DevicePackageManagerUtil.setLauncherComponentState(context, UnlockActivity.class, true);
+            Log.i(TAG, "AAAA onReceive(),intent:"+intent);
+            DevicePackageManager.getInstance().setMyLauncherComponentState(context, UnlockActivity.class, true);
             if( intent.getAction().equals(Intent.ACTION_SCREEN_ON) ||
                     intent.getAction().equals(Intent.ACTION_USER_PRESENT )) {
                 Intent unlock = new Intent(context, UnlockActivity.class);

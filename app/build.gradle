@@ -11,10 +11,32 @@ android {
         versionCode 1
         versionName "1.0"
     }
+
     buildTypes {
-        release {
+        debug {
+            //Debug enabling..
+            debuggable true
+            //Resource shrinking... should be false
+            shrinkResources false
+            //Code shrinking.. should be false
             minifyEnabled false
+            //To obfuscate your classes during the build process
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            //Build vars
+            buildConfigField 'String', 'BASE_URL', '"http://api-nhope.itexico.com/"'
+            buildConfigField 'String', 'CLIENT_ID', '"5776c6b72471289a735b106a"'
+            buildConfigField 'String', 'CLIENT_SECRET', '"t0yYcJaNoUIlCYH8u43xrjV0K10GdmDl"'
+        }
+        release {
+            debuggable false
+            shrinkResources true
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            //Build vars
+            buildConfigField 'String', 'CLIENT_ID', '""'
+            buildConfigField 'String', 'CLIENT_SECRET', '""'
+            //Signing..
+//            signingConfig signingConfigs.release
         }
     }
 }
@@ -22,4 +44,9 @@ android {
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile 'com.android.support:appcompat-v7:23.2.0'
+    compile 'com.android.support:support-v4:23.2.0'
+    compile 'com.android.support:design:23.2.0'
+    compile 'com.android.support:cardview-v7:23.2.1'
+    compile 'com.squareup.retrofit2:retrofit:2.0.0'
+    compile 'com.squareup.retrofit2:converter-gson:2.0.0'
 }

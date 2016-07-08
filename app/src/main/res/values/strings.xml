@@ -13,4 +13,21 @@
     <string name="error_email_field_invalid">Enter valid Email id</string>
     <string name="bad_credentials">Login Error</string>
     <string name="ok">OK</string>
+    <string name="search_hint">Search Devices</string>
+    <string name="search_label">Search Label</string>
+    <string name="device_info"><b>IMEI- </b> %1$s \n
+                               <b>Model- </b> %2$s
+    </string>
+    <string name="dialog_postive_buttton_id">OK</string>
+    <string name="dialog_title">Permission Info</string>
+
+    <string name="device_info_imei"><b>IMEI- </b> %1$s</string>
+    <string name="device_info_model"><b>Model- </b> %1$s</string>
+    <string name="device_info_os_version"><b>OS Version- </b> %1$s</string>
+    <string name="device_info_serial_number"><b>Serial Number- </b> %1$s</string>
+    <string name="device_info_itexico_id"><b>iTexico ID- </b> %1$s</string>
+    <string name="device_info_owner_email_id"><b>Owner Email ID- </b> %1$s</string>
+    <string name="device_info_owner_username"><b>Owner Username- </b> %1$s</string>
+
+    <string name="dialog_message">Allow access to Read phone state to get Device information</string>
 </resources>
