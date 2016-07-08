@@ -1,4 +1,4 @@
-package com.itexico.utilities.lockmydevice.utils;
+package com.itexico.utilities.lockmydevice.devicepackage;
 
 import android.content.ComponentName;
 import android.content.Context;
@@ -9,7 +9,7 @@ import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.util.Log;
 
-import com.itexico.utilities.lockmydevice.UnlockActivity;
+import com.itexico.utilities.lockmydevice.activities.UnlockActivity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,19 +17,25 @@ import java.util.List;
 /**
  * Created by iTexico Developer on 6/29/2016.
  */
-public class DevicePackageManagerUtil {
+public class DevicePackageManager {
 
-    private DevicePackageManagerUtil() {
+    private  final String TAG = DevicePackageManager.class.getSimpleName();
+
+    final private static DevicePackageManager DEVICE_PACKAGE_MANAGER = new DevicePackageManager();
+
+    private DevicePackageManager() {
     }
 
-    private static final String TAG = DevicePackageManagerUtil.class.getSimpleName();
+     synchronized public static DevicePackageManager getInstance() {
+        return DEVICE_PACKAGE_MANAGER;
+    }
 
     /**
      * method checks to see if app is currently set as default launcher
      *
      * @return boolean true means currently set as default, otherwise false
      */
-    public static boolean isMyAppLauncherDefault(final Context context) {
+    public  boolean isMyAppLauncherDefault(final Context context) {
         final IntentFilter filter = new IntentFilter(Intent.ACTION_MAIN);
         filter.addCategory(Intent.CATEGORY_HOME);
 
@@ -55,7 +61,7 @@ public class DevicePackageManagerUtil {
      * to select their default launcher. It comes up each time it is
      * detected that our app is not the default launcher
      */
-    public static void launchAppChooser(final Context context) {
+    public  void launchAppChooser(final Context context) {
         Log.d(TAG, "AAAA launchAppChooser()");
         Intent intent = new Intent(Intent.ACTION_MAIN);
         intent.addCategory(Intent.CATEGORY_HOME);
@@ -63,7 +69,7 @@ public class DevicePackageManagerUtil {
         context.startActivity(intent);
     }
 
-    public static void resetPreferredLauncherAndOpenChooser(Context context, Class componentClassName) {
+    public  void resetPreferredLauncherAndOpenChooser(Context context, Class componentClassName) {
         Log.i(TAG, "AAAA resetPreferredLauncherAndOpenChooser()");
         PackageManager packageManager = context.getPackageManager();
         ComponentName componentName = new ComponentName(context, componentClassName);
@@ -77,8 +83,8 @@ public class DevicePackageManagerUtil {
         packageManager.setComponentEnabledSetting(componentName, PackageManager.COMPONENT_ENABLED_STATE_DEFAULT, PackageManager.DONT_KILL_APP);
     }
 
-    public static void setLauncherComponentState(Context context, Class componentClassName, boolean isEnable) {
-        Log.i(TAG, "AAAA setLauncherComponentState(),isEnable:" + isEnable);
+    public  void setMyLauncherComponentState(Context context, Class componentClassName, boolean isEnable) {
+        Log.i(TAG, "AAAA setMyLauncherComponentState(),isEnable:" + isEnable);
         PackageManager packageManager = context.getPackageManager();
         ComponentName componentName = new ComponentName(context, componentClassName);
         if (isEnable) {
@@ -88,13 +94,8 @@ public class DevicePackageManagerUtil {
         }
     }
 
-    public static void launchDefaultLauncher(final Context context) {
+    public  void launchDefaultLauncher(final Context context) {
         Log.i(TAG, "AAAA launchDefaultLauncher()");
-//        getPackageManager().clearPackagePreferredActivities(getPackageName());
-//        final Intent intent = new Intent();
-//        intent.setAction(Intent.ACTION_MAIN);
-//        intent.addCategory(Intent.CATEGORY_HOME);
-//        startActivity(intent);
 
         Intent intent = null;
         final PackageManager packageManager = context.getPackageManager();
@@ -110,11 +111,18 @@ public class DevicePackageManagerUtil {
         context.startActivity(intent);
     }
 
-    public static void enableDefaultLauncher(final Context context, boolean isEnable) {
+    public boolean isComponentEnabled(final Context context, Class<?> activityClass){
+        final ComponentName componentName = new ComponentName(context, activityClass);
+        final PackageManager pm = context.getPackageManager();
+        final int result = pm.getComponentEnabledSetting(componentName);
+        return result == PackageManager.COMPONENT_ENABLED_STATE_ENABLED;
+    }
+
+    public  void enableDefaultLauncher(final Context context, boolean isEnable) {
         Log.i(TAG, "AAAA enableDefaultLauncher(),isEnable:" + isEnable);
         Intent intent = null;
         final PackageManager packageManager = context.getPackageManager();
-//        packageManager.clearPackagePreferredActivities("com.android.launcher");
+        packageManager.clearPackagePreferredActivities("com.android.launcher");
         String defaultLauncherPackageName = "";
 
         for (final ResolveInfo resolveInfo : packageManager.queryIntentActivities(new Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_HOME), PackageManager.MATCH_DEFAULT_ONLY)) {
@@ -133,7 +141,7 @@ public class DevicePackageManagerUtil {
         }
     }
 
-    public static void makePreferred(final Context context) {
+    public  void makePreferred(final Context context) {
         PackageManager packageManager = context.getPackageManager();
         IntentFilter intentFilter = new IntentFilter(Intent.ACTION_MAIN);
         intentFilter.addCategory(Intent.CATEGORY_HOME);
@@ -149,7 +157,7 @@ public class DevicePackageManagerUtil {
 
 
     // Requires permission SET_PREFERRED_APPLICATIONS.
-    public static boolean setPreferredHomeActivity(Context context, String packageName, String className) {
+    public  boolean setPreferredHomeActivity(Context context, String packageName, String className) {
         ComponentName oldPreferredActivity = getPreferredHomeActivity(context);
         if (oldPreferredActivity != null && packageName.equals(oldPreferredActivity.getPackageName()) && className.equals(oldPreferredActivity.getClassName())) {
             return false;
@@ -165,7 +173,7 @@ public class DevicePackageManagerUtil {
         return true;
     }
 
-    private static ComponentName getPreferredHomeActivity(Context context) {
+    private  ComponentName getPreferredHomeActivity(Context context) {
         ArrayList<IntentFilter> filters = new ArrayList<>();
         List<ComponentName> componentNames = new ArrayList<>();
         context.getPackageManager().getPreferredActivities(filters, componentNames, null);
@@ -178,7 +186,7 @@ public class DevicePackageManagerUtil {
         return null;
     }
 
-    private static ComponentName[] getActivitiesListByActionAndCategory(Context context, String action, String category) {
+    private  ComponentName[] getActivitiesListByActionAndCategory(Context context, String action, String category) {
         Intent queryIntent = new Intent(action);
         queryIntent.addCategory(category);
         List<ResolveInfo> resInfos = context.getPackageManager().queryIntentActivities(queryIntent, PackageManager.MATCH_DEFAULT_ONLY);
