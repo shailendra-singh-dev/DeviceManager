@@ -2,6 +2,7 @@ package com.itexico.utilities.lockmydevice.utils;
 
 import android.content.Context;
 import android.os.Build;
+import android.provider.Settings;
 import android.telephony.TelephonyManager;
 
 import com.itexico.utilities.lockmydevice.R;
@@ -50,9 +51,14 @@ public class DeviceMetaData {
     }
 
     public static String getDeviceIMEINumber(final Context context) {
+        String deviceID ="";
         String serviceName = Context.TELEPHONY_SERVICE;
-        TelephonyManager m_telephonyManager = (TelephonyManager) context.getSystemService(serviceName);
-        return m_telephonyManager.getDeviceId();
+        TelephonyManager telephonyManager = (TelephonyManager) context.getSystemService(serviceName);
+        deviceID = telephonyManager.getDeviceId();
+        if(null == deviceID || deviceID.isEmpty()){
+            deviceID = Settings.Secure.getString(context.getContentResolver(), Settings.Secure.ANDROID_ID);
+        }
+        return deviceID;
     }
 
     public static String getDeviceType(final Context context) {

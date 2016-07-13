@@ -1,8 +1,13 @@
 package com.itexico.utilities.lockmydevice.activities;
 
+import android.Manifest;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.text.method.PasswordTransformationMethod;
 import android.util.Log;
 import android.view.View;
@@ -20,22 +25,22 @@ public class UnlockActivity extends BaseActivity {
 
     private static final String UNLOCK_ACTIVITY = UnlockActivity.class.getCanonicalName();
     private static final String TAG = UnlockActivity.class.getSimpleName();
-    private Button unlockButton;
-    private LinearLayout logInSection;
-    private EditText emailField;
-    private EditText passField;
-    private LinearLayout unlockSection;
-    private TextView userNameLabel;
-    private Button yesIAm;
-    private Button noImNot;
-
+    private static final int READ_PHONE_STATE_PERMISSION_CODE = 10;
+    private Button mUnlockButton;
+    private LinearLayout mLogInSection;
+    private EditText mEmailField;
+    private EditText mPassField;
+    private LinearLayout mUnlockSection;
+    private TextView mUserNameLabel;
+    private Button mYesIAmButton;
+    private Button mNoImNotButton;
 
     private View.OnClickListener listener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
             switch (v.getId()) {
                 case R.id.unlockButton:
-                    addUser();
+                    validateUserAndUnLock();
                     break;
                 case R.id.yesIAm:
                     unlock();
@@ -47,8 +52,6 @@ public class UnlockActivity extends BaseActivity {
         }
     };
 
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -57,30 +60,24 @@ public class UnlockActivity extends BaseActivity {
 
         setContentView(R.layout.activity_unlock);
 
-        unlockButton = (Button) findViewById(R.id.unlockButton);
-        logInSection = (LinearLayout) findViewById(R.id.logInSection);
+        mUnlockButton = (Button) findViewById(R.id.unlockButton);
+        mLogInSection = (LinearLayout) findViewById(R.id.logInSection);
 
-        emailField = (EditText) findViewById(R.id.emailField);
+        mEmailField = (EditText) findViewById(R.id.emailField);
 
-        passField = (EditText) findViewById(R.id.passField);
-        passField.setTypeface(Typeface.DEFAULT);
-        passField.setTransformationMethod(new PasswordTransformationMethod());
+        mPassField = (EditText) findViewById(R.id.passField);
+        mPassField.setTypeface(Typeface.DEFAULT);
+        mPassField.setTransformationMethod(new PasswordTransformationMethod());
 
-        unlockSection = (LinearLayout) findViewById(R.id.unlockSection);
-        userNameLabel = (TextView) findViewById(R.id.userNameLabel);
-        yesIAm = (Button) findViewById(R.id.yesIAm);
-        noImNot = (Button) findViewById(R.id.noImNot);
+        mUnlockSection = (LinearLayout) findViewById(R.id.unlockSection);
+        mUserNameLabel = (TextView) findViewById(R.id.userNameLabel);
+        mYesIAmButton = (Button) findViewById(R.id.yesIAm);
+        mNoImNotButton = (Button) findViewById(R.id.noImNot);
 
-        unlockButton.setOnClickListener(listener);
-        yesIAm.setOnClickListener(listener);
-        noImNot.setOnClickListener(listener);
+        mUnlockButton.setOnClickListener(listener);
+        mYesIAmButton.setOnClickListener(listener);
+        mNoImNotButton.setOnClickListener(listener);
 
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        Log.i(TAG, "AAAA onResume()");
         String user = getActiveUser();
         if (user != null && user.length() > 0) {
             unlockView(user);
@@ -90,23 +87,29 @@ public class UnlockActivity extends BaseActivity {
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        Log.i(TAG, "AAAA onResume()");
+    }
+
+    @Override
     protected void onPause() {
         super.onPause();
         Log.i(TAG, "AAAA onPause()");
     }
 
     private void loginView() {
-        logInSection.setVisibility(View.VISIBLE);
-        unlockSection.setVisibility(View.GONE);
+        mLogInSection.setVisibility(View.VISIBLE);
+        mUnlockSection.setVisibility(View.GONE);
 
         removeUser();
     }
 
     private void unlockView(String user) {
-        logInSection.setVisibility(View.GONE);
-        unlockSection.setVisibility(View.VISIBLE);
+        mLogInSection.setVisibility(View.GONE);
+        mUnlockSection.setVisibility(View.VISIBLE);
 
-        userNameLabel.setText("ARE YOU " + user + " ? ");
+        mUserNameLabel.setText("ARE YOU " + user + " ? ");
     }
 
     private String getActiveUser() {
@@ -117,16 +120,31 @@ public class UnlockActivity extends BaseActivity {
         return DevicePreferencesManager.getString(this, DevicePreferencesManager.SHAREDPREFERENCE_KEY.KEY_PASSWORD);
     }
 
-    private void addUser() {
+    public void validateUserAndUnLock() {
         if (isFieldsValid()) {
-            addUser(emailField.getText().toString(), passField.getText().toString());
-            unlock();
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
+                if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.READ_PHONE_STATE)) {
+                    showAlertDialogWithPositiveButton(R.string.dialog_postive_buttton_id, R.string.permission_dialog_title, getString(R.string.permission_dialog_message), new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            ActivityCompat.requestPermissions(UnlockActivity.this, new String[]{Manifest.permission.READ_PHONE_STATE}, READ_PHONE_STATE_PERMISSION_CODE);
+                        }
+                    });
+                } else {
+                    ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.READ_PHONE_STATE}, READ_PHONE_STATE_PERMISSION_CODE);
+                }
+            } else {
+                unlockAndAddUser();
+            }
         }
     }
 
-    private void addUser(String user, String pass) {
-        DevicePreferencesManager.setString(this, DevicePreferencesManager.SHAREDPREFERENCE_KEY.KEY_USER, user);
-        DevicePreferencesManager.setString(this, DevicePreferencesManager.SHAREDPREFERENCE_KEY.KEY_PASSWORD, pass);
+    private void unlockAndAddUser() {
+        Log.i(TAG, "AAAA unlockAndAddUser()...");
+        unlock();
+        if (mBound) {
+            mDeviceService.saveCredentials(mEmailField.getText().toString(), mPassField.getText().toString());
+        }
     }
 
     private void removeUser() {
@@ -135,11 +153,8 @@ public class UnlockActivity extends BaseActivity {
 
     private void unlock() {
         finish();
-        DevicePackageManager.getInstance().launchDefaultLauncher(this);
-        final boolean isMyAppLauncherDefault = DevicePackageManager.getInstance().isMyAppLauncherDefault(this);
-        Log.i(TAG, "AAAA unlock(), isMyAppLauncherDefault:" + isMyAppLauncherDefault);
-        if(isMyAppLauncherDefault) {
-            DevicePackageManager.getInstance().setMyLauncherComponentState(this, UnlockActivity.class, false);
+        if (mBound) {
+            mDeviceService.launchDefaultLauncher(this);
         }
     }
 
@@ -149,12 +164,12 @@ public class UnlockActivity extends BaseActivity {
         Log.i(TAG, "AAAA onUserLeaveHint()");
         final boolean isMyAppLauncherDefault = DevicePackageManager.getInstance().isMyAppLauncherDefault(this);
         Log.i(TAG, "AAAA unlock(), isMyAppLauncherDefault:" + isMyAppLauncherDefault);
-        if(DevicePackageManager.getInstance().isMyAppLauncherDefault(this) && DevicePackageManager.getInstance().isComponentEnabled(this,UnlockActivity.class)){
+        if (DevicePackageManager.getInstance().isMyAppLauncherDefault(this) && DevicePackageManager.getInstance().isComponentEnabled(this, UnlockActivity.class)) {
             Intent intent = new Intent().addCategory(Intent.CATEGORY_HOME).setAction(Intent.ACTION_MAIN).
                     setClassName(getPackageName(), getPackageName() + "." + UnlockActivity.class.getSimpleName());
             Log.i(TAG, "AAAA onUserLeaveHint(),DevicePackageManager.getInstance().isMyAppLauncherDefault");
             startActivity(intent);
-        }else{
+        } else {
             Log.i(TAG, "AAAA onUserLeaveHint(),DevicePackageManager.getInstance().resetPreferredLauncherAndOpenChooser()");
             DevicePackageManager.getInstance().resetPreferredLauncherAndOpenChooser(this, UnlockActivity.class);
         }
@@ -174,21 +189,30 @@ public class UnlockActivity extends BaseActivity {
     }
 
     public boolean isFieldsValid() {
-        final String emailId = emailField.getText().toString();
-        final String password = passField.getText().toString();
+        final String emailId = mEmailField.getText().toString();
+        final String password = mPassField.getText().toString();
+        int messageId = 0;
 
         boolean valid = true;
         if (!(emailId.length() > 0)) {
             valid = false;
-            showErrorBadCredentialsMessage(this, R.string.error_email_field_empty);
+            messageId = R.string.dialog_error_email_field_empty;
         }
         if (!AppUtils.isValidEmail(emailId)) {
             valid = false;
-            showErrorBadCredentialsMessage(this, R.string.error_email_field_invalid);
+            messageId = R.string.dialog_error_email_field_invalid;
         }
         if (!(password.length() > 0)) {
             valid = false;
-            showErrorBadCredentialsMessage(this, R.string.error_password_field_empty);
+            messageId = R.string.dialog_error_password_field_empty;
+        }
+        if (!valid) {
+            showAlertDialogWithPositiveButton(R.string.dialog_postive_buttton_id, R.string.dialog_title, getString(messageId), new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss();
+                }
+            });
         }
         return valid;
     }
@@ -196,6 +220,19 @@ public class UnlockActivity extends BaseActivity {
     @Override
     public void onBackPressed() {
         Log.i(TAG, "AAAA Disabled Back click...");
+    }
+
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        switch (requestCode) {
+            case READ_PHONE_STATE_PERMISSION_CODE:
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    unlockAndAddUser();
+                }
+
+                break;
+        }
     }
 
 }

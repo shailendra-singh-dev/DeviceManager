@@ -1,9 +1,6 @@
 package com.itexico.utilities.lockmydevice.activities;
 
-import android.Manifest;
-import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.support.v4.app.ActivityCompat;
 import android.widget.TextView;
 
 import com.itexico.utilities.lockmydevice.R;
@@ -20,7 +17,7 @@ public class DeviceInfoDetailActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.device_info_details);
-        openDeviceInfo();
+        updateDeviceInfo();
     }
 
     private void updateDeviceInfo(){
@@ -32,7 +29,7 @@ public class DeviceInfoDetailActivity extends BaseActivity {
         final TextView deviceOwnerEmailIDView = (TextView)findViewById(R.id.device_owner_email_id);
         final TextView deviceOwnerUsernameView = (TextView)findViewById(R.id.device_owner_username);
 
-        final String deviceIMEI = String.format(getString(R.string.device_info_imei), DeviceMetaData.getDeviceIMEINumber(this))+",Type:"+DeviceMetaData.getDeviceType(this);
+        final String deviceIMEI = "IMEI number-93029302399203929";//String.format(getString(R.string.device_info_imei), DeviceMetaData.getDeviceIMEINumber(this))+",Type:"+DeviceMetaData.getDeviceType(this);
         final String deviceModel = String.format(getString(R.string.device_info_model), DeviceMetaData.getDeviceModelNumber());
         final String deviceOSVersion = String.format(getString(R.string.device_info_os_version), DeviceMetaData.getDeviceOSVersion());
         final String deviceSerialNumber = String.format(getString(R.string.device_info_serial_number), DeviceMetaData.getDeviceSerialNumber());
@@ -49,26 +46,8 @@ public class DeviceInfoDetailActivity extends BaseActivity {
         deviceOwnerUsernameView.setText(deviceOwnerUsername);
     }
 
-    public void openDeviceInfo() {
-        final String[] permissionsForCameraRecording = new String[]{Manifest.permission.READ_PHONE_STATE};
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
-            if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.READ_PHONE_STATE)) {
-                showAlertDialogWithPositiveButton(R.string.dialog_postive_buttton_id,R.string.dialog_title,getString(R.string.dialog_message));
-            } else {
-                ActivityCompat.requestPermissions(DeviceInfoDetailActivity.this, permissionsForCameraRecording, REQUEST_READ_PHONE_STATE);
-            }
-        } else {
-            updateDeviceInfo();
-        }
-    }
-
     @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        switch (requestCode){
-            case REQUEST_READ_PHONE_STATE:
-                updateDeviceInfo();
-                break;
-        }
+    protected void onStart() {
+        super.onStart();
     }
 }

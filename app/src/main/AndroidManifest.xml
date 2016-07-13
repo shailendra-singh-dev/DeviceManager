@@ -54,6 +54,8 @@
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
 
+
+        <service android:name=".service.DeviceService" />
         <receiver
             android:name=".receiver.UnlockReceiver"
             android:permission="android.permission.RECEIVE_BOOT_COMPLETED">
