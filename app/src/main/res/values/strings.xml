@@ -5,7 +5,7 @@
     <string name="action_settings">Settings</string>
 
     <string name="unlock_title">HELLO!</string>
-    <string name="unlock_button">UNLOCK</string>
+    <string name="unlock_button">Unlock Device</string>
     <string name="prompt_account_email">Enter email id</string>
     <string name="prompt_account_password">Enter password</string>
     <string name="bad_credentials">Login Error</string>
@@ -23,6 +23,7 @@
     <string name="device_info_owner_email_id"><b>Owner Email ID- </b> %1$s</string>
     <string name="device_info_owner_username"><b>Owner Username- </b> %1$s</string>
 
+    <string name="device_info_last_login"><b>Last Login:</b>\n%1$s\n%2$s</string>
     <!--Login info dialog -->
     <string name="dialog_postive_buttton_id">OK</string>
     <string name="dialog_title">Info</string>
@@ -33,5 +34,17 @@
     <!-- Permission for Accessing Phone Info-->
     <string name="permission_dialog_title">Permission Info</string>
     <string name="permission_dialog_message">Allow access to Read phone state to get Device information</string>
+    <string name="email_entry">Email</string>
+    <string name="password_entry">Password</string>
+    <string name="get_me_in">Yeah, get me in</string>
+    <string name="nope">Nope</string>
+    <string name="hello">Hello </string>
+    <string name="hello_user_exclamatorty_mark">!</string>
+    <string name="device">DEVICE</string>
+    <string name="itexico_id">ITEXICO ID</string>
+    <string name="serial_number">SERIAL NUMBER</string>
+    <string name="os_version">OS VERSION</string>
+    <string name="string_empty" />
+    <string name="is_this_you">is this you</string>
 
 </resources>

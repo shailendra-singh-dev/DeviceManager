@@ -1,4 +1,4 @@
-package com.itexico.utilities.lockmydevice.views;
+package com.itexico.utilities.lockmydevice.adapter;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;

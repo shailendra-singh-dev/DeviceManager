@@ -1,6 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#3F51B5</color>
-    <color name="colorPrimaryDark">#303F9F</color>
+    <color name="colorPrimary">#fa8f25</color>
+    <color name="colorPrimaryDark">#8b572a</color>
     <color name="colorAccent">#FF4081</color>
+    <color name="unlock_device_color">#fa8f25</color>
+    <color name="unlock_device_color_dark">#8b572a</color>
+    <color name="background_color">#e51a74bb</color>
+    <color name="black_alpha_40">#66000000</color>
+    <color name="transparent_black">#80000000</color>
+    <color name="device_info_details_device_type">#3498db</color>
+    <color name="device_info_model_number">#757575</color>
+    <color name="device_info_last_login">#999999</color>
 </resources>

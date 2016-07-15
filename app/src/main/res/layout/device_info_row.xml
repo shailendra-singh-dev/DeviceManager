@@ -1,30 +1,76 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:card_view="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="@dimen/user_profile_logo_height"
     android:clickable="true"
+    android:background="@android:color/white"
     android:foreground="?android:attr/selectableItemBackground"
-    card_view:cardBackgroundColor="#E6E6E6"
+    card_view:cardBackgroundColor="@android:color/white"
     card_view:cardCornerRadius="8dp"
-    card_view:cardElevation="4dp">
+    card_view:cardElevation="4dp"
+    android:layout_marginBottom="15dp">
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <TextView
-            android:id="@+id/device_info"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:layout_centerInParent="true"
-            android:ellipsize="end"
-            android:gravity="center"
-            android:singleLine="true"
-            android:text="@string/app_name"
-            android:textIsSelectable="false"
-            android:textSize="@dimen/auction_title" />
+        <ImageView
+            android:id="@+id/device_info_logo"
+            android:layout_width="@dimen/user_profile_logo_width"
+            android:layout_height="match_parent"
+            android:layout_alignParentLeft="true"
+            android:adjustViewBounds="true"
+            android:scaleType="fitCenter"
+            android:src="@drawable/group_2" />
 
+        <TextView
+            android:id="@+id/device_info_model_number"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@id/device_info_logo"
+            android:textColor="@color/device_info_model_number"
+            android:textSize="24sp"
+            android:layout_marginLeft="15dp"
+            android:layout_marginBottom="12dp"/>
+
+        <TextView
+            android:id="@+id/device_info_itexico_id"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/device_info_model_number"
+            android:layout_toRightOf="@id/device_info_logo"
+            android:textColor="@color/device_info_model_number"
+            android:textSize="12sp"
+            android:layout_marginLeft="15dp"
+            android:layout_marginBottom="12dp"/>
+
+        <TextView
+            android:id="@+id/device_info_last_login"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_toRightOf="@id/device_info_logo"
+            android:textColor="@color/device_info_last_login"
+            android:textSize="12sp"
+            android:layout_marginLeft="15dp"
+            android:layout_marginBottom="12dp"/>
+
+        <com.itexico.utilities.lockmydevice.views.CircularImageView
+            android:id="@+id/device_info_user_logo"
+            android:layout_width="@dimen/device_info_user_profile_logo_width"
+            android:layout_height="@dimen/device_info_user_profile_logo_width"
+            android:src="@mipmap/ic_launcher"
+            app:civ_border="true"
+            app:civ_border_color="@android:color/white"
+            app:civ_border_width="1dp"
+            app:civ_shadow="true"
+            app:civ_shadow_color="#3f51b5"
+            app:civ_shadow_radius="1"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentBottom="true"
+            android:layout_margin="15dp"/>
     </RelativeLayout>
 
 </android.support.v7.widget.CardView>

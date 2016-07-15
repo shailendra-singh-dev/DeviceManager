@@ -3,4 +3,8 @@
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
     <dimen name="auction_title">15sp</dimen>
+    <dimen name="space_2dp">2dp</dimen>
+    <dimen name="user_profile_logo_width">90dp</dimen>
+    <dimen name="user_profile_logo_height">140dp</dimen>
+    <dimen name="device_info_user_profile_logo_width">40dp</dimen>
 </resources>

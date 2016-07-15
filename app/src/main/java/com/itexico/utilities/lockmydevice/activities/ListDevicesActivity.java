@@ -9,6 +9,7 @@ import android.support.v4.view.MenuItemCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -16,18 +17,18 @@ import android.view.MenuItem;
 import android.view.View;
 
 import com.itexico.utilities.lockmydevice.R;
+import com.itexico.utilities.lockmydevice.adapter.DevicesListAdapter;
 import com.itexico.utilities.lockmydevice.devicepackage.DevicePackageManager;
 import com.itexico.utilities.lockmydevice.interfaces.OnItemClickListener;
+import com.itexico.utilities.lockmydevice.interfaces.RecycleViewItemTouchListener;
 import com.itexico.utilities.lockmydevice.model.DeviceInfo;
-import com.itexico.utilities.lockmydevice.views.DevicesListAdapter;
-import com.itexico.utilities.lockmydevice.views.RecycleViewItemTouchListener;
 
 import java.util.ArrayList;
 
 /**
  * Created by iTexico Developer on 7/5/2016.
  */
-public class ListDevicesActivity extends BaseActivity implements SearchView.OnQueryTextListener   {
+public class ListDevicesActivity extends BaseActivity implements SearchView.OnQueryTextListener {
 
     private static final String TAG = ListDevicesActivity.class.getSimpleName();
     private MenuItem mMenuItem;
@@ -40,8 +41,16 @@ public class ListDevicesActivity extends BaseActivity implements SearchView.OnQu
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_list_devices);
-        if(DevicePackageManager.getInstance().isMyAppLauncherDefault(this)){
-            DevicePackageManager.getInstance().setMyLauncherComponentState(this,UnlockActivity.class,false);
+        final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar.setTitle(R.string.string_empty);
+        setSupportActionBar(toolbar);
+
+//        final ActionBar actionBar = getSupportActionBar();
+//        actionBar.setHomeButtonEnabled(true);
+//        actionBar.setDisplayHomeAsUpEnabled(true);
+
+        if (DevicePackageManager.getInstance().isMyAppLauncherDefault(this)) {
+            DevicePackageManager.getInstance().setMyLauncherComponentState(this, UnlockActivity.class, false);
         }
         handleIntent(getIntent());
 
@@ -64,9 +73,9 @@ public class ListDevicesActivity extends BaseActivity implements SearchView.OnQu
                                     searchView.setQuery("", false);
                                 }
                                 final DeviceInfo deviceInfo = mDeviceInfos.get(position);
-                                final Intent intent = new Intent(ListDevicesActivity.this,DeviceInfoDetailActivity.class);
+                                final Intent intent = new Intent(ListDevicesActivity.this, DeviceInfoDetailActivity.class);
                                 ListDevicesActivity.this.startActivity(intent);
-                                ListDevicesActivity.this.overridePendingTransition(R.anim.slide_in_right,R.anim.slide_out_left);
+                                ListDevicesActivity.this.overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
                             }
                         }
                 )
@@ -91,6 +100,15 @@ public class ListDevicesActivity extends BaseActivity implements SearchView.OnQu
         return true;
     }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        //Handles ToolBar backArrow Navigation...
+        if (item.getItemId() == android.R.id.home) {
+            super.onBackPressed();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
 
     @Override
     protected void onNewIntent(Intent intent) {
@@ -126,20 +144,36 @@ public class ListDevicesActivity extends BaseActivity implements SearchView.OnQu
         DeviceInfo deviceInfoNexus5 = new DeviceInfo();
         deviceInfoNexus5.setDeviceIMEI("UI7292932398");
         deviceInfoNexus5.setDeviceModel("Nexus 5");
+        deviceInfoNexus5.setDeviceiTexicoID("i0001");
+        deviceInfoNexus5.setDeviceOwnerEmailID("user1222@itexico.net");
 
         DeviceInfo deviceInfoNexus4 = new DeviceInfo();
         deviceInfoNexus4.setDeviceIMEI("UI7292932398");
         deviceInfoNexus4.setDeviceModel("Nexus 4");
+        deviceInfoNexus4.setDeviceiTexicoID("i00016");
+        deviceInfoNexus4.setDeviceOwnerEmailID("user454@itexico.net");
 
         DeviceInfo deviceInfoSamsungS5 = new DeviceInfo();
         deviceInfoSamsungS5.setDeviceIMEI("UI7292932398");
         deviceInfoSamsungS5.setDeviceModel("Samsung S5");
+        deviceInfoSamsungS5.setDeviceiTexicoID("i00034");
+        deviceInfoSamsungS5.setDeviceOwnerEmailID("user445@itexico.net");
+
+        DeviceInfo motorolla = new DeviceInfo();
+        motorolla.setDeviceIMEI("UI7292932398");
+        motorolla.setDeviceModel("Samsung S5");
+        motorolla.setDeviceiTexicoID("i00022");
+        motorolla.setDeviceOwnerEmailID("user188@itexico.net");
 
         for (int i = 0; i < 50; i++) {
             if (i % 2 == 0) {
                 mDeviceInfos.add(deviceInfoSamsungS5);
-            } else {
+            } else if (i % 3 == 0) {
                 mDeviceInfos.add(deviceInfoNexus4);
+            } else if (i % 5 == 0) {
+                mDeviceInfos.add(deviceInfoNexus5);
+            } else if (i % 7 == 0) {
+                mDeviceInfos.add(motorolla);
             }
         }
     }

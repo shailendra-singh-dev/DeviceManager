@@ -5,11 +5,14 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Typeface;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.text.method.HideReturnsTransformationMethod;
 import android.text.method.PasswordTransformationMethod;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -33,7 +36,9 @@ public class UnlockActivity extends BaseActivity {
     private LinearLayout mUnlockSection;
     private TextView mUserNameLabel;
     private Button mYesIAmButton;
-    private Button mNoImNotButton;
+    private TextView mNoImNotButton;
+    private boolean isPasswordToggle;
+    private TextView mUserEmailIDLabel;
 
     private View.OnClickListener listener = new View.OnClickListener() {
         @Override
@@ -67,12 +72,32 @@ public class UnlockActivity extends BaseActivity {
 
         mPassField = (EditText) findViewById(R.id.passField);
         mPassField.setTypeface(Typeface.DEFAULT);
-        mPassField.setTransformationMethod(new PasswordTransformationMethod());
+        mPassField.setOnTouchListener(new View.OnTouchListener() {
+
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                final int DRAWABLE_RIGHT = 2;
+                if (event.getAction() == MotionEvent.ACTION_UP) {
+                    if (event.getRawX() >= (mPassField.getRight() - mPassField.getCompoundDrawables()[DRAWABLE_RIGHT].getBounds().width())) {
+                        if (!isPasswordToggle) {
+                            mPassField.setTransformationMethod(HideReturnsTransformationMethod.getInstance());
+                            isPasswordToggle = true;
+                        } else {
+                            mPassField.setTransformationMethod(PasswordTransformationMethod.getInstance());
+                            isPasswordToggle = false;
+                        }
+                        return true;
+                    }
+                }
+                return false;
+            }
+        });
 
         mUnlockSection = (LinearLayout) findViewById(R.id.unlockSection);
         mUserNameLabel = (TextView) findViewById(R.id.userNameLabel);
+        mUserEmailIDLabel = (TextView) findViewById(R.id.user_email_id);
         mYesIAmButton = (Button) findViewById(R.id.yesIAm);
-        mNoImNotButton = (Button) findViewById(R.id.noImNot);
+        mNoImNotButton = (TextView) findViewById(R.id.noImNot);
 
         mUnlockButton.setOnClickListener(listener);
         mYesIAmButton.setOnClickListener(listener);
@@ -80,7 +105,7 @@ public class UnlockActivity extends BaseActivity {
 
         String user = getActiveUser();
         if (user != null && user.length() > 0) {
-            unlockView(user);
+            unlockView(user, user);
         } else {
             loginView();
         }
@@ -105,11 +130,12 @@ public class UnlockActivity extends BaseActivity {
         removeUser();
     }
 
-    private void unlockView(String user) {
+    private void unlockView(String user, String emailID) {
         mLogInSection.setVisibility(View.GONE);
         mUnlockSection.setVisibility(View.VISIBLE);
 
-        mUserNameLabel.setText("ARE YOU " + user + " ? ");
+        mUserNameLabel.setText(getString(R.string.hello) + " " + user + getString(R.string.hello_user_exclamatorty_mark));
+        mUserEmailIDLabel.setText(emailID);
     }
 
     private String getActiveUser() {
@@ -122,16 +148,21 @@ public class UnlockActivity extends BaseActivity {
 
     public void validateUserAndUnLock() {
         if (isFieldsValid()) {
-            if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
-                if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.READ_PHONE_STATE)) {
-                    showAlertDialogWithPositiveButton(R.string.dialog_postive_buttton_id, R.string.permission_dialog_title, getString(R.string.permission_dialog_message), new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            ActivityCompat.requestPermissions(UnlockActivity.this, new String[]{Manifest.permission.READ_PHONE_STATE}, READ_PHONE_STATE_PERMISSION_CODE);
-                        }
-                    });
+            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP_MR1) {
+                int permissionCheck = ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_CALENDAR);
+                if (permissionCheck != PackageManager.PERMISSION_GRANTED) {
+                    if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.READ_PHONE_STATE)) {
+                        showAlertDialogWithPositiveButton(R.string.dialog_postive_buttton_id, R.string.permission_dialog_title, getString(R.string.permission_dialog_message), new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                ActivityCompat.requestPermissions(UnlockActivity.this, new String[]{Manifest.permission.READ_PHONE_STATE}, READ_PHONE_STATE_PERMISSION_CODE);
+                            }
+                        });
+                    } else {
+                        ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_PHONE_STATE}, READ_PHONE_STATE_PERMISSION_CODE);
+                    }
                 } else {
-                    ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.READ_PHONE_STATE}, READ_PHONE_STATE_PERMISSION_CODE);
+                    unlockAndAddUser();
                 }
             } else {
                 unlockAndAddUser();
@@ -230,7 +261,6 @@ public class UnlockActivity extends BaseActivity {
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     unlockAndAddUser();
                 }
-
                 break;
         }
     }

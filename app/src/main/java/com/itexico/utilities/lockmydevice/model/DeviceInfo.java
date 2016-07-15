@@ -12,6 +12,33 @@ public class DeviceInfo {
     private String mDeviceiTexicoID;
     private String mDeviceOwnerEmailID;
     private String mDeviceOwnerUsername;
+    private String mDeviceLastLogin;
+    private String mDeviceInventoryLogo;
+    private String mDeviceUserLogo;
+
+    public String getDeviceUserLogo() {
+        return mDeviceUserLogo;
+    }
+
+    public void setDeviceUserLogo(String mDeviceUserLogo) {
+        this.mDeviceUserLogo = mDeviceUserLogo;
+    }
+
+    public String getDeviceInventoryLogo() {
+        return mDeviceInventoryLogo;
+    }
+
+    public void setDeviceInventoryLogo(String mDeviceInventoryLogo) {
+        this.mDeviceInventoryLogo = mDeviceInventoryLogo;
+    }
+
+    public String getDeviceLastLogin() {
+        return mDeviceLastLogin;
+    }
+
+    public void setDeviceLastLogin(String deviceLastLogin) {
+        mDeviceLastLogin = deviceLastLogin;
+    }
 
     public String getDeviceIMEI() {
         return mDeviceIMEI;

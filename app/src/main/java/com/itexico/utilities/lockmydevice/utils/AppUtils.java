@@ -3,6 +3,7 @@ package com.itexico.utilities.lockmydevice.utils;
 import android.text.TextUtils;
 
 import java.io.File;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,6 +11,8 @@ import java.util.List;
  * Created by iTexico Developer on 6/28/2016.
  */
 public class AppUtils {
+
+    private static final java.lang.String DATE_FORMAT = "'on' EEE, d MMM yyyy 'at' hh:mm aaa";
 
     public final static boolean isValidEmail(CharSequence target) {
         if (target == null)
@@ -25,7 +28,7 @@ public class AppUtils {
             if (file.isDirectory()) {
                 inFiles.addAll(getListFiles(file));
             } else {
-                if(file.getName().endsWith(".mp4")){
+                if (file.getName().endsWith(".mp4")) {
                     inFiles.add(file);
                 }
             }
@@ -54,4 +57,10 @@ public class AppUtils {
 
         return phrase.toString();
     }
+
+    public static String getDateFormattedTime(final long timeInMillis)  {
+        SimpleDateFormat mSDF = new SimpleDateFormat(DATE_FORMAT);
+        return mSDF.format(timeInMillis);
+    }
+
 }

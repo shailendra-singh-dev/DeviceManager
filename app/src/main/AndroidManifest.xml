@@ -33,7 +33,7 @@
             android:enabled="true"
             android:launchMode="singleTask"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme">
+            android:theme="@style/ListDevicesActivity">
             <meta-data
                 android:name="android.app.searchable"
                 android:resource="@xml/searchable"
@@ -52,10 +52,10 @@
         <activity
             android:name=".activities.DeviceInfoDetailActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme" />
-
+            android:theme="@style/DeviceInfoDetailActivityTheme" />
 
         <service android:name=".service.DeviceService" />
+
         <receiver
             android:name=".receiver.UnlockReceiver"
             android:permission="android.permission.RECEIVE_BOOT_COMPLETED">

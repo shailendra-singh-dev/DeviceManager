@@ -1,4 +1,4 @@
-package com.itexico.utilities.lockmydevice.views;
+package com.itexico.utilities.lockmydevice.interfaces;
 
 import android.content.Context;
 import android.support.v4.view.ViewCompat;
@@ -7,8 +7,6 @@ import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-
-import com.itexico.utilities.lockmydevice.interfaces.OnItemClickListener;
 
 /**
  * Created by iTexico Developer on 7/7/2016.

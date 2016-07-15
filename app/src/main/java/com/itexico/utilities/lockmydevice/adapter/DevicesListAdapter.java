@@ -1,4 +1,4 @@
-package com.itexico.utilities.lockmydevice.views;
+package com.itexico.utilities.lockmydevice.adapter;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
@@ -7,10 +7,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Filter;
 import android.widget.Filterable;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.itexico.utilities.lockmydevice.R;
 import com.itexico.utilities.lockmydevice.model.DeviceInfo;
+import com.itexico.utilities.lockmydevice.utils.AppUtils;
+import com.itexico.utilities.lockmydevice.views.CircularImageView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,9 +45,24 @@ public class DevicesListAdapter extends RecyclerViewAdapter implements Filterabl
         if (mFilteredDeviceInfoList.isEmpty()) {
             return;
         }
-        final TextView deviceInfoView = (TextView) viewHolder.getView(R.id.device_info);
+        final TextView deviceInfoModelNumberView = (TextView) viewHolder.getView(R.id.device_info_model_number);
+        final TextView deviceInfoiTexicoIDView = (TextView) viewHolder.getView(R.id.device_info_itexico_id);
+        final TextView deviceInfoLastLoginView = (TextView) viewHolder.getView(R.id.device_info_last_login);
+        final ImageView deviceInfoLogoView = (ImageView) viewHolder.getView(R.id.device_info_logo);
+        final CircularImageView circularImageView = (CircularImageView) viewHolder.getView(R.id.device_info_user_logo);
         final DeviceInfo deviceInfo = mFilteredDeviceInfoList.get(position);
-        deviceInfoView.setText(String.format(getContext().getResources().getString(R.string.device_info),deviceInfo.getDeviceIMEI(),deviceInfo.getDeviceModel()));
+
+        String modelNumber = deviceInfo.getDeviceModel();
+        String iTexicoID = deviceInfo.getDeviceiTexicoID();
+        String deviceLastLogin = String.format(getContext().getString(R.string.device_info_last_login), deviceInfo.getDeviceOwnerEmailID(),
+                AppUtils.getDateFormattedTime(System.currentTimeMillis()));//deviceInfo.getDeviceLastLogin();
+        String deviceInventoryLogo = deviceInfo.getDeviceInventoryLogo();
+        String deviceUserLogo = deviceInfo.getDeviceUserLogo();
+
+        deviceInfoModelNumberView.setText(modelNumber);
+        deviceInfoiTexicoIDView.setText(String.format(getContext().getResources().getString(R.string.device_info_itexico_id), iTexicoID));
+        deviceInfoLastLoginView.setText(deviceLastLogin);
+
     }
 
     @Override
@@ -55,7 +73,7 @@ public class DevicesListAdapter extends RecyclerViewAdapter implements Filterabl
 
     @Override
     public int getItemCount() {
-        if(null == mFilteredDeviceInfoList){
+        if (null == mFilteredDeviceInfoList) {
             return 0;
         }
         return mFilteredDeviceInfoList.size();
@@ -72,7 +90,7 @@ public class DevicesListAdapter extends RecyclerViewAdapter implements Filterabl
         @Override
         protected FilterResults performFiltering(CharSequence constraint) {
             FilterResults filterResults = new FilterResults();
-            if (constraint!=null && constraint.length()>0) {
+            if (constraint != null && constraint.length() > 0) {
                 ArrayList<DeviceInfo> tempList = new ArrayList<DeviceInfo>();
                 // search content in friend list
                 for (DeviceInfo deviceInfo : mDeviceInfoList) {
@@ -92,8 +110,9 @@ public class DevicesListAdapter extends RecyclerViewAdapter implements Filterabl
 
         /**
          * Notify about filtered list to ui
+         *
          * @param constraint text
-         * @param results filtered result
+         * @param results    filtered result
          */
         @SuppressWarnings("unchecked")
         @Override
