@@ -2,7 +2,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.itexico.utilities.lockmydevice">
 
-
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
 
     <application

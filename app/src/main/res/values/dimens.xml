@@ -7,4 +7,9 @@
     <dimen name="user_profile_logo_width">90dp</dimen>
     <dimen name="user_profile_logo_height">140dp</dimen>
     <dimen name="device_info_user_profile_logo_width">40dp</dimen>
+    <dimen name="unlock_section_margin">30dp</dimen>
+    <dimen name="login_section_margin">50dp</dimen>
+    <dimen name="login_section_email_text_size">15sp</dimen>
+    <dimen name="login_section_email_text_value_size">16sp</dimen>
+    <dimen name="login_section_unlock_button_text_size">18sp</dimen>
 </resources>

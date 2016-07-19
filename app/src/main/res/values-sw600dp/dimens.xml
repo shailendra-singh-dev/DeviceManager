@@ -1,0 +1,7 @@
+<resources>
+    <dimen name="unlock_section_margin">60dp</dimen>
+    <dimen name="login_section_margin">100dp</dimen>
+    <dimen name="login_section_email_text_size">30sp</dimen>
+    <dimen name="login_section_email_text_value_size">32sp</dimen>
+    <dimen name="login_section_unlock_button_text_size">36sp</dimen>
+</resources>

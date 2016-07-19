@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.Build;
 import android.provider.Settings;
 import android.telephony.TelephonyManager;
+import android.util.Log;
 
 import com.itexico.utilities.lockmydevice.R;
 
@@ -37,6 +38,7 @@ public class DeviceMetaData {
 
     private static final String DEVICE_TYPE_PHONE = "Phone";
     private static final String DEVICE_TYPE_TABLET = "Tablet";
+    private static final String TAG = DeviceMetaData.class.getSimpleName();
 
     private DeviceMetaData() {
     }
@@ -55,8 +57,12 @@ public class DeviceMetaData {
         String serviceName = Context.TELEPHONY_SERVICE;
         TelephonyManager telephonyManager = (TelephonyManager) context.getSystemService(serviceName);
         deviceID = telephonyManager.getDeviceId();
+        //Since IMEI is valid only if sim is available
+
+        Log.i(TAG, "AAAA getDeviceIMEINumber:telephonyManager.getDeviceId():" + deviceID);
         if(null == deviceID || deviceID.isEmpty()){
             deviceID = Settings.Secure.getString(context.getContentResolver(), Settings.Secure.ANDROID_ID);
+            Log.i(TAG, "AAAA getDeviceIMEINumber:Settings.Secure.getString:"+deviceID);
         }
         return deviceID;
     }

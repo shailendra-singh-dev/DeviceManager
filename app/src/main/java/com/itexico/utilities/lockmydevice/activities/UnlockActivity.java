@@ -5,10 +5,9 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Typeface;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.text.method.HideReturnsTransformationMethod;
 import android.text.method.PasswordTransformationMethod;
 import android.util.Log;
@@ -23,8 +22,9 @@ import com.itexico.utilities.lockmydevice.R;
 import com.itexico.utilities.lockmydevice.devicepackage.DevicePackageManager;
 import com.itexico.utilities.lockmydevice.preferences.DevicePreferencesManager;
 import com.itexico.utilities.lockmydevice.utils.AppUtils;
+import com.itexico.utilities.lockmydevice.utils.DeviceMetaData;
 
-public class UnlockActivity extends BaseActivity {
+public class UnlockActivity extends BaseActivity implements View.OnClickListener {
 
     private static final String UNLOCK_ACTIVITY = UnlockActivity.class.getCanonicalName();
     private static final String TAG = UnlockActivity.class.getSimpleName();
@@ -40,22 +40,41 @@ public class UnlockActivity extends BaseActivity {
     private boolean isPasswordToggle;
     private TextView mUserEmailIDLabel;
 
-    private View.OnClickListener listener = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            switch (v.getId()) {
-                case R.id.unlockButton:
-                    validateUserAndUnLock();
-                    break;
-                case R.id.yesIAm:
-                    unlock();
-                    break;
-                case R.id.noImNot:
-                    loginView();
-                    break;
-            }
-        }
-    };
+//    private View.OnClickListener listener = new View.OnClickListener() {
+//        @Override
+//        public void onClick(View v) {
+//            switch (v.getId()) {
+//                case R.id.unlockButton:{
+//                    if (ActivityCompat.checkSelfPermission(UnlockActivity.this, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
+//                        if (ActivityCompat.shouldShowRequestPermissionRationale(UnlockActivity.this, Manifest.permission.READ_PHONE_STATE)) {
+//                            AlertDialog.Builder builder = new AlertDialog.Builder(UnlockActivity.this);
+//                            builder.setTitle("Requesting Read External Storage");
+//                            builder.setMessage("This app requires accesss to External Storage to get the Video for editing..");
+//                            builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+//                                @Override
+//                                public void onClick(DialogInterface arg0, int arg1) {
+//                                    ActivityCompat.requestPermissions(UnlockActivity.this, new String[]{Manifest.permission.READ_PHONE_STATE}, READ_PHONE_STATE_PERMISSION_CODE);
+//                                }
+//                            });
+//                            builder.show();
+//                        } else {
+//                            ActivityCompat.requestPermissions(UnlockActivity.this,new String[]{Manifest.permission.READ_PHONE_STATE}, READ_PHONE_STATE_PERMISSION_CODE);
+//                        }
+//                    } else {
+//                        Log.i(TAG, "AAAA validateUserAndUnLock(),permission granted");
+//                        //openGalleryPicker();
+//                    }
+//                }
+//                    break;
+//                case R.id.yesIAm:
+//                    unlock();
+//                    break;
+//                case R.id.noImNot:
+//                    loginView();
+//                    break;
+//            }
+//        }
+//    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -99,9 +118,9 @@ public class UnlockActivity extends BaseActivity {
         mYesIAmButton = (Button) findViewById(R.id.yesIAm);
         mNoImNotButton = (TextView) findViewById(R.id.noImNot);
 
-        mUnlockButton.setOnClickListener(listener);
-        mYesIAmButton.setOnClickListener(listener);
-        mNoImNotButton.setOnClickListener(listener);
+        mUnlockButton.setOnClickListener(this);
+        mYesIAmButton.setOnClickListener(this);
+        mNoImNotButton.setOnClickListener(this);
 
         String user = getActiveUser();
         if (user != null && user.length() > 0) {
@@ -146,29 +165,55 @@ public class UnlockActivity extends BaseActivity {
         return DevicePreferencesManager.getString(this, DevicePreferencesManager.SHAREDPREFERENCE_KEY.KEY_PASSWORD);
     }
 
-    public void validateUserAndUnLock() {
-        if (isFieldsValid()) {
-            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP_MR1) {
-                int permissionCheck = ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_CALENDAR);
-                if (permissionCheck != PackageManager.PERMISSION_GRANTED) {
-                    if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.READ_PHONE_STATE)) {
-                        showAlertDialogWithPositiveButton(R.string.dialog_postive_buttton_id, R.string.permission_dialog_title, getString(R.string.permission_dialog_message), new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                ActivityCompat.requestPermissions(UnlockActivity.this, new String[]{Manifest.permission.READ_PHONE_STATE}, READ_PHONE_STATE_PERMISSION_CODE);
-                            }
-                        });
-                    } else {
-                        ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_PHONE_STATE}, READ_PHONE_STATE_PERMISSION_CODE);
+//    public void validateUserAndUnLock() {
+//        if (isFieldsValid()) {
+//            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP_MR1) {
+//                int permissionCheck = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE);
+//                Log.i(TAG, "AAAA validateUserAndUnLock(),permissionCheck:" + permissionCheck);
+//                if (permissionCheck != PackageManager.PERMISSION_GRANTED) {
+//                    if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.READ_PHONE_STATE)) {
+//                        showAlertDialogWithPositiveButton(R.string.dialog_postive_buttton_id, R.string.permission_dialog_title, getString(R.string.permission_dialog_message), new DialogInterface.OnClickListener() {
+//                            @Override
+//                            public void onClick(DialogInterface dialog, int which) {
+//                                ActivityCompat.requestPermissions(UnlockActivity.this, new String[]{Manifest.permission.READ_PHONE_STATE}, READ_PHONE_STATE_PERMISSION_CODE);
+//                            }
+//                        });
+//                    } else {
+//                        ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_PHONE_STATE}, READ_PHONE_STATE_PERMISSION_CODE);
+//                    }
+//                } else {
+//                    unlockAndAddUser();
+//                }
+//            } else {
+//                unlockAndAddUser();
+//            }
+//        }
+//    }
+
+    public void openGallery() {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.READ_PHONE_STATE)) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setTitle("Requesting Read External Storage");
+                builder.setMessage("This app requires accesss to External Storage to get the Video for editing..");
+                builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface arg0, int arg1) {
+                        ActivityCompat.requestPermissions(UnlockActivity.this, new String[]{Manifest.permission.READ_PHONE_STATE}, READ_PHONE_STATE_PERMISSION_CODE);
                     }
-                } else {
-                    unlockAndAddUser();
-                }
+                });
+                builder.show();
             } else {
-                unlockAndAddUser();
+                ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.READ_PHONE_STATE}, READ_PHONE_STATE_PERMISSION_CODE);
             }
+        } else {
+            Log.i(TAG, "AAAA validateUserAndUnLock(),permission granted");
+            //openGalleryPicker();
         }
     }
+
+
+
 
     private void unlockAndAddUser() {
         Log.i(TAG, "AAAA unlockAndAddUser()...");
@@ -256,6 +301,7 @@ public class UnlockActivity extends BaseActivity {
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        Log.i(TAG,"onRequestPermissionsResult() requestCode:"+requestCode);
         switch (requestCode) {
             case READ_PHONE_STATE_PERMISSION_CODE:
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
@@ -264,5 +310,42 @@ public class UnlockActivity extends BaseActivity {
                 break;
         }
     }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.unlockButton:{
+                if (ActivityCompat.checkSelfPermission(UnlockActivity.this, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
+                    if (ActivityCompat.shouldShowRequestPermissionRationale(UnlockActivity.this, Manifest.permission.READ_PHONE_STATE)) {
+                        AlertDialog.Builder builder = new AlertDialog.Builder(UnlockActivity.this);
+                        builder.setTitle("Requesting Read External Storage");
+                        builder.setMessage("This app requires access to External Storage to get the Video for editing..");
+                        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface arg0, int arg1) {
+                                ActivityCompat.requestPermissions(UnlockActivity.this, new String[]{Manifest.permission.READ_PHONE_STATE}, READ_PHONE_STATE_PERMISSION_CODE);
+                            }
+                        });
+                        builder.show();
+                    } else {
+                        ActivityCompat.requestPermissions(UnlockActivity.this,new String[]{Manifest.permission.READ_PHONE_STATE}, READ_PHONE_STATE_PERMISSION_CODE);
+                    }
+                } else {
+                    //Can't use IMEI since for Tablets will not have this..And we can get only for Phone which has SIM card on it. And it requires from user on 6.0 Above devices.
+                    String deviceSerialNumber =DeviceMetaData.getDeviceSerialNumber();
+                    Log.i(TAG, "AAAA deviceID:"+deviceSerialNumber);
+                    unlockAndAddUser();
+                }
+            }
+            break;
+            case R.id.yesIAm:
+                unlock();
+                break;
+            case R.id.noImNot:
+                loginView();
+                break;
+        }
+    }
+
 
 }

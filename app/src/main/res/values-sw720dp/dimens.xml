@@ -1,0 +1,5 @@
+<resources>
+    <dimen name="unlock_section_margin">60dp</dimen>
+    <dimen name="login_section_margin">100dp</dimen>
+
+</resources>

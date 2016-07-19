@@ -12,7 +12,6 @@ import android.util.Log;
 import com.itexico.utilities.lockmydevice.activities.UnlockActivity;
 import com.itexico.utilities.lockmydevice.devicepackage.DevicePackageManager;
 import com.itexico.utilities.lockmydevice.preferences.DevicePreferencesManager;
-import com.itexico.utilities.lockmydevice.utils.DeviceMetaData;
 
 import java.util.Random;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -75,8 +74,6 @@ public class DeviceService extends Service {
         mThreadPoolExecutor.execute(new Runnable() {
             @Override
             public void run() {
-                final String imeiNumber = DeviceMetaData.getDeviceIMEINumber(DeviceService.this);
-                Log.i(TAG,"AAAA saveCredentials imeiNumber:"+imeiNumber);
                 DevicePreferencesManager.setString(DeviceService.this, DevicePreferencesManager.SHAREDPREFERENCE_KEY.KEY_USER, user);
                 DevicePreferencesManager.setString(DeviceService.this, DevicePreferencesManager.SHAREDPREFERENCE_KEY.KEY_PASSWORD, pass);
             }
